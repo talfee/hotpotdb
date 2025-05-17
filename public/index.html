@@ -1,0 +1,458 @@
+<!-- This was based from the CPSC304_Node_Project: https://github.students.cs.ubc.ca/CPSC304/CPSC304_Node_Project-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- This meta tag ensures that the website renders correctly across different device sizes, enhancing mobile responsiveness. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Link to the external CSS stylesheet. Uncomment if you wish to customize or add styling. -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- bootstrap CSS-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+    <title>Database Application</title>
+</head>
+
+<body>
+    <!-- ===================================================================================== -->
+    <!-- Display the current status of the database connection.  -->
+    <h1>Database Connection Status:
+        <!-- An in-line placeholder to display connection status. -->
+        <span id="dbStatus"> </span>
+        <!-- A loading GIF, will be hided once get the status. -->
+        <img id="loadingGif" class="loading-gif" src="loading_100px.gif" alt="Loading...">
+    </h1>
+    <br>
+    <hr><br> <!-- ========================================================================= -->
+    <!-- Show 'Recipe Table'. 
+        Data will be fetched and inserted here dynamically using JavaScript. -->
+    <h2>Show Recipe Posts</h2>
+    <table id="Recipes" border="1">
+        <thead>
+            <tr>
+                <!--Table head, need to be adjusted accordingly to align with your own.-->
+                <th>Recipe ID</th>
+                <th>Update Date</th>
+                <th>Serving Size</th>
+                <th>Description</th>
+                <th>Title</th>
+                <th>Creation Date</th>
+                <th>Author</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <br>
+    <hr><br> <!-- ========================================================================= -->
+
+
+    <h2> Add Recipe Post </h2>
+    <p>Fill in the below fields to add a recipe post!</p>
+    <form id="insertRecipe">
+        
+        <div class="container">
+            <!-- User selection -->
+            <div class="row mb-3">
+                <div class="col-sm-2 d-flex align-items-center">
+                    <label for="userSelect">Select User:</label>                
+                </div>
+                <div class="col-sm-6">
+                    <!-- dropdown for users (display name) -->
+                    <select id="userSelectDropdown" class="form-select column-dropdown" ></select>
+                </div>
+            </div>
+            <!-- Title text box -->
+            <div class="row mb-3">
+                <div class="col-sm-2 d-flex align-items-center">
+                    Title:
+                </div>
+                <div class="col-sm-10">
+                    <input type="text" id="insertTitle" placeholder="Enter Title" maxlength="100">
+                </div>
+            </div>
+            <!-- Description text box -->
+            <div class="row mb-3">
+                <div class="col-sm-2 d-flex align-items-center">
+                    Description:
+                </div>
+                <div class="col-sm-10">
+                    <input type="text" id="insertDescription" placeholder="Enter Description" maxlength="1000">
+                </div>
+            </div>
+            <!-- Ingredients selection -->
+            <div class="row">
+                <div class="col-sm-3 d-flex align-items-center">
+                    <label for="ingredientSelect">Select Ingredient:</label>
+                </div>
+                <!-- dropdown for ingredients -->
+                <div class="col-sm-5 d-flex align-items-center">
+                    <select id="ingredientSelectDropdown" class="form-select column-dropdown"></select>
+                </div>
+                <div class="col-sm-4 d-flex align-items-center justify-content-center">
+                    <button type="button" id="addIngredient" class="btn btn-primary">Add Ingredient</button> <br><br>
+                </div>
+            </div>
+            <!-- display list of selected ingredients -->
+            <div class="row mb-3">
+                <div class="col-sm-9 d-flex align-items-center justify-content-center">
+                    <div id="ingredientList"></div>
+                </div>
+            </div>
+            <!-- Restaurant Selection -->
+            <div class="row">
+                <div class="col-sm-3 d-flex align-items-center">
+                    <label for="restaurantSelect">Restaurant(s) Recipe is Made For:</label>
+                </div>
+                <!-- dropdown for Restaurants -->
+                <div class="col-sm-5 d-flex align-items-center">
+                    <select id="restaurantSelectDropdown" class="form-select column-dropdown"></select>
+                </div>
+                <div class="col-sm-4 d-flex align-items-center justify-content-center">
+                    <button type="button" id="addRestaurant" class="btn btn-primary">Add Restaurant</button> <br><br>
+                </div>
+            </div>
+            <!-- display list of selected restaurants -->
+            <div class="row mb-3">
+                <div class="col-sm-9 d-flex align-items-center justify-content-center">
+                    <div id="restaurantList"></div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-sm-2 d-flex align-items-center">
+                    ServingSize:
+                </div>
+                <div class="col-sm-10">
+                    <input type="number" id="insertServingSize" placeholder="Enter Serving Size">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 d-flex align-items-center justify-content-center">
+                    <button type="submit" class="btn btn-primary"> Add Recipe</button> <br>
+                </div>
+            </div>
+        </div>
+    </form>
+    <div id="insertResultMsg"></div>
+
+    <br>
+    <hr><br> <!-- ========================================================================= -->
+
+    <h2>Update Recipe Post</h2>
+    <p>After entering the recipe ID of the post you would like to update, fill in any fields that you like to update and leave any you would like to remain unchanged blank</p>
+    <p>NOTE: if anything is entered into an "update" field, the entire attribute will updated with exactly what is written in the update box</p>
+    <form id="updateRecipeTable">
+        <div class="container">
+            <div class="row mb-3">
+                <div class="col-sm-2 d-flex align-items-center justify-content-center">
+                    Recipe ID to update:
+                </div>
+                <div class="col-sm-9">
+                    <input type="number" id="updateRecipeID" placeholder="Enter Recipe ID" required>
+                </div>
+                <div class="col-sm-1">
+                    <button type="submit" id="updateRecipe" class="btn btn-primary"> Select </button>
+                </div>
+            </div>
+            <!-- Input boxes are user enters recipe ID and clicks 'select' -->
+            <div id="fieldsForUpdating" style="display: none;">
+                <div class="row mb-3">
+                    <div class="col-sm-3 d-flex align-items-center">
+                        Current Serving Size:
+                    </div>
+                    <div class="col-sm-8">
+                        <span id="updateServingSize"></span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3 d-flex align-items-center">
+                        Updated Serving Size:
+                    </div>
+                    <div class="col-sm-8">
+                        <input type="number" id="newServingSize" placeholder="Enter New Serving Size">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3 d-flex align-items-center">
+                        Current Description:
+                    </div>
+                    <div class="col-sm-8">
+                        <span id="updateDescription"></span>                    
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3 d-flex align-items-center">
+                        Updated Description:
+                    </div>
+                    <div class="col-sm-8">
+                        <input type="text" id="newDescription" placeholder="Enter New Description" maxlength="1000">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3 d-flex align-items-center">
+                        Current Title:
+                    </div>
+                    <div class="col-sm-8">
+                        <span id="updateTitle"></span>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-3 d-flex align-items-center">
+                        Updated Title:
+                    </div>
+                    <div class="col-sm-8">
+                        <input type="text" id="newTitle" placeholder="Enter New Title" maxlength="100">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 d-flex align-items-center">
+                        <button type="button" id="update" class="btn btn-primary"> Update </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- A placeholder to display messages related to the update operation. -->
+    <div id="updateRecipeResultMsg"></div>
+
+    <br>
+    <hr><br> <!-- ========================================================================= -->
+    <h2>Delete Recipe Post</h2>
+    <p>Enter the recipe ID of the recipe post you would like to delete</p>
+    <p>NOTE: This action cannot be undone</p>
+    <form id="deleteRecipetable">
+        <div class="container">
+            <div class="row mb-3">
+                <div class="col-sm-2 d-flex align-items-center justify-content-center">
+                    Recipe ID:
+                </div>
+                <div class="col-sm-9">
+                    <input type="number" id="recipeIdToDelete" placeholder="Enter recipe ID" required>
+                </div>
+                <div class="col-sm-1">
+                    <button type="submit" class="btn btn-primary"> delete </button>
+                </div>
+            </div>
+        </div>
+    </form>
+    <!-- A placeholder to display messages related to the update operation. -->
+    <div id="deleteRecipeTupleResultMsg"></div>
+
+    <br>
+    <hr><br> <!-- ========================================================================= -->
+
+    <!-- Show 'Restaurants'.  -->
+    <h2>Show Restaurants</h2>
+    <p>Toggle the below restaurants attributes to see only the needed information!</p>
+    <label class="switch">
+        <input type="checkbox" id="fullAddress" checked onchange="toggleRestaurantTableContent()">
+        <span class="slider round"></span>
+    </label> Full Address
+    <label class="switch">
+        <input type="checkbox" id="cityProvince" checked onchange="toggleRestaurantTableContent()">
+        <span class="slider round"></span>
+    </label> City & Province
+    <label class="switch">
+        <input type="checkbox" id="Name" checked onchange="toggleRestaurantTableContent()">
+        <span class="slider round"></span>
+    </label> Name
+
+    <br><br>
+    <table id="Restaurants" border="1">
+        <thead id="restaurantTableHeader">
+            <tr>
+                <th>Full Address</th>
+                <th>City Province</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+
+    <br>
+    <hr><br> <!-- SELECTION: ===========================================================-->
+    <h2>Restaurants Search</h2>
+    <p>Please enter the restaurants' attributes exactly as they appear and add different selection criteria using the '+' button</p>
+    <p>NOTE: All inputs are case sensitive</p>
+    <div class="container mt-4">
+        <form id="restaurantSearchForm">
+            <div id="filtersContainer">
+                <div class="row mb-3 filter-row">
+                    <div class="col-md-3">
+                        <select class="form-select column-dropdown">
+                            <option value="Name">Restaurant Name</option>
+                            <option value="Full_Address">Full Address</option>
+                            <option value="City_Province">City/Province</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control condition-input" placeholder="Enter filter condition">
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" class="btn btn-secondary w-100 add-filter">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 col-md-3 mx-auto mt-4">
+                <button type="submit" class="btn btn-primary">SEARCH</button> <br>
+            </div>
+
+            <table id="restaurantSearchResult" border="1" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Full Address</th>
+                        <th>City Province</th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <div id="restaurantSearchMsg"></div>
+
+        </form>
+    </div>
+    <hr><br> <!-- ========================================================================= -->
+    <!-- Show 'Made_For' table.  -->
+    <h2>Show Made_For table</h2>
+    <p>This table shows which recipes are made for which restaurants</p>
+    <table id="MadeFor" border="1">
+        <thead>
+            <tr>
+                <!--Table head, need to be adjusted accordingly to align with your own.-->
+                <th>Recipe ID</th>
+                <th>Full Address</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <br>
+    <hr><br>
+
+    <br>
+    <hr><br> <!-- ========================================================================= -->
+    <!-- Show 'Recipes for Reseraunts in your area'.  -->
+    <h2>Recipes for Restaurants in Your Area</h2>
+    <p>Please enter the city and province to find the recipe posts dedicated to restaurants in that area! </p>
+    <p>NOTE: Input is case sensitive and must match the city/province exactly</p>
+    <form id="RecipesForResteraunts">
+        <div class="container">
+            <div class="row mb-3">
+                <div class="col-sm-2 d-flex align-items-center justify-content-center">
+                    City and Province:
+                </div>
+                <div class="col-sm-9">
+                    <input type="text" id="joinCityProv" placeholder="Ex. Burnaby, BC" required>
+                </div>
+                <div class="col-sm-1">
+                    <button type="submit" class="btn btn-primary"> Find </button>
+                </div>
+            </div>
+        </div>
+        <!-- resulting table that appears after -->
+        <table id="recipeRest" border="1" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Full Address</th>
+                    <th>City Province</th>
+                    <th>Name</th>
+                    <th>Recipe ID</th>
+                    <th>Update Date</th>
+                    <th>Serving Size</th>
+                    <th>Description</th>
+                    <th>Title</th>
+                    <th>Creation Date</th>
+                    <th>Author</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <div id="RecipeRestJoinMsg"></div> <br>
+    </form>
+
+    <br>
+
+    <hr><br> <!-- DIVISION: ===========================================================-->
+
+    <h2>Jack of All Trades - Restaurants</h2>
+    <p> Click the below button to see which restaurant(s) you can try all recipes at!</p>
+    <button id="allRecipesRestaurantTable" class="btn btn-primary"> Show </button> <br><br>
+    <div id="divisionResultMsg"></div> <br>
+
+    <br>
+    <hr><br> <!-- AGGREGATION WITH GROUP BY: ===========================================================-->
+
+    <h2>Average rated recipes for each serving size:</h2>
+    <p> Click the below button to see the average rating for each serving size!</p>
+    <button id="rateServingSizeRecipeTable" class="btn btn-primary"> Calculate </button> <br><br>
+    <table id="rateServingSizeRecipeResultTable" border="1" style="display: none;">
+        <thead>
+            <tr>
+                <th>Serving Size</th>
+                <th>Average Rating</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <div id="avergeRatingResultMsg"></div> <br>
+    <br>
+    <hr><br> <!-- AGGREGATION WITH HAVING: ===========================================================-->
+
+    <h2>Hot Cities</h2>
+    <p>Click the button below to see the cities with 3 or more Hot Pot Restaurants</p>
+    <button id="HotCitiesBtn" class="btn btn-primary"> Get Cities </button> <br><br>
+    <table id="HotCitiesTable" border="1" style="display: none;">
+        <thead>
+            <tr>
+                <th>City Province</th>
+                <th>Number of Resteraunts</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+ 
+    <div id="HotCitiesMsg"></div> <br>
+
+    <br>
+    <hr><br> <!-- NESTED AGGREGATION: ===========================================================-->
+
+    <h2>Month with Lowest Average Rating</h2>
+    <p>Click the button below to see the recipe post creation month with the lowest average rating</p>
+    <button id="MonthBtn" class="btn btn-primary"> Get Month </button> <br><br>
+    <table id="MonthTable" border="1" style="display: none;">
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th>Lowest average rating</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <div id="MonthMsg"></div> <br>
+
+    <br>
+    <hr><br> <!-- ========================================================================= -->
+
+    <!-- ===================================================================================== -->
+    <!-- External JavaScript file that contains the functionality/logic for the operations above. -->
+    <script src="scripts.js"></script>
+
+    <!-- bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>
